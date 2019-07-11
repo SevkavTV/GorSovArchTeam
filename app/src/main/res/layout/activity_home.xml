@@ -1,158 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_gravity="bottom"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeActivity">
-
-    <HorizontalScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scrollbars="none"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="400dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.444"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.726">
-
-        <LinearLayout
-            android:id="@+id/linearLayoutRecentApps"
+    android:gravity="bottom"
+    tools:context=".HomeActivity"
+    app:umanoDragView="@id/dragview"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <HorizontalScrollView
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal" />
-    </HorizontalScrollView>
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="400dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.444"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.726">
 
-    <TextView
-        android:id="@+id/textTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textSize="25sp"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.056" />
+            <LinearLayout
+                android:id="@+id/linearLayoutRecentApps"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
 
-    <ImageView
-        android:id="@+id/adobe"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_toLeftOf="@id/documents"
-        android:layout_marginTop="200dp"
-        android:layout_marginRight="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.33"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.366"
-        app:srcCompat="@drawable/adobe" />
+        <TextView
+            android:id="@+id/textTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textSize="25sp"
+            android:layout_marginTop="20dp"
+            android:layout_centerHorizontal="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.056" />
 
-    <ImageView
-        android:id="@+id/documents"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="200dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.366"
-        app:srcCompat="@drawable/documents" />
+        <ImageView
+            android:id="@+id/adobe"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_toLeftOf="@id/documents"
+            android:layout_centerInParent="true"
+            android:layout_marginRight="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.33"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.366"
+            app:srcCompat="@drawable/adobe" />
 
-    <ImageView
-        android:id="@+id/chrome"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:layout_toRightOf="@id/documents"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="200dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.66"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.366"
-        app:srcCompat="@drawable/chrome" />
+        <ImageView
+            android:id="@+id/documents"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="200dp"
+            android:layout_centerInParent="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.366"
+            app:srcCompat="@drawable/documents" />
 
-    <TextView
-        android:id="@+id/textAdobe"
-        android:layout_width="75dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/adobe"
-        android:layout_alignLeft="@id/adobe"
-        android:gravity="center"
-        android:text="Adobe Reader"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.321"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.582" />
+        <ImageView
+            android:id="@+id/chrome"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_toRightOf="@id/documents"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="200dp"
+            android:layout_centerInParent="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.66"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.366"
+            app:srcCompat="@drawable/chrome" />
 
-    <TextView
-        android:id="@+id/textDocs"
-        android:layout_width="109dp"
-        android:layout_height="53dp"
-        android:layout_below="@id/documents"
-        android:layout_alignLeft="@id/documents"
-        android:layout_marginLeft="-21dp"
-        android:layout_marginTop="0dp"
-        android:gravity="center"
-        android:text="Додаткові матеріали"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.577" />
+        <TextView
+            android:id="@+id/textAdobe"
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/adobe"
+            android:layout_alignLeft="@id/adobe"
+            android:gravity="center"
+            android:text="Adobe Reader"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.321"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.582" />
 
-    <TextView
-        android:id="@+id/textChrome"
-        android:layout_width="75dp"
-        android:layout_height="50dp"
-        android:layout_below="@id/chrome"
-        android:layout_alignLeft="@id/chrome"
-        android:layout_marginLeft="0dp"
-        android:layout_marginTop="-11dp"
-        android:gravity="center"
-        android:text="Chrome"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.671"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.577" />
+        <TextView
+            android:id="@+id/textDocs"
+            android:layout_width="109dp"
+            android:layout_height="53dp"
+            android:layout_below="@id/documents"
+            android:layout_alignLeft="@id/documents"
+            android:layout_marginLeft="-21dp"
+            android:layout_marginTop="0dp"
+            android:gravity="center"
+            android:text="Додаткові матеріали"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.577" />
 
-    <ImageView
-        android:id="@+id/profile"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        app:srcCompat="@drawable/profile" />
+        <TextView
+            android:id="@+id/textChrome"
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:layout_below="@id/chrome"
+            android:layout_alignLeft="@id/chrome"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="-11dp"
+            android:gravity="center"
+            android:text="Chrome"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.671"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.577" />
 
-    <TextView
-        android:id="@+id/userName"
-        android:layout_width="150dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="15dp"
-        android:layout_toRightOf="@id/profile"
-        android:text="@Gov"
-        android:textSize="30sp"
-        android:layout_marginLeft="10dp"/>
+        <ImageView
+            android:id="@+id/profile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            app:srcCompat="@drawable/profile" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="15dp"
+            android:layout_toRightOf="@id/profile"
+            android:text="@Gov"
+            android:textSize="30sp"
+            android:layout_marginLeft="10dp"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/dragview">
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="15dp"
+            android:layout_centerHorizontal="true"/>
+    </RelativeLayout>
+
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>
