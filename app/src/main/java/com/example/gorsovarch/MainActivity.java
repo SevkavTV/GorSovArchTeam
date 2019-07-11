@@ -20,13 +20,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getSupportActionBar().hide();
         editLogin = (EditText)findViewById(R.id.editTextLogin);
         editPassword = (EditText)findViewById(R.id.editTextPassword);
         enter = (Button)findViewById(R.id.btnEnter);
         enter.setTextColor(getResources().getColor(R.color.DimGrey));
         editLogin.addTextChangedListener(loginTextWatcher);
         editPassword.addTextChangedListener(loginTextWatcher);
-        getSupportActionBar().hide();
         enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
