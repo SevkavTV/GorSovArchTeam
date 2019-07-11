@@ -2,6 +2,7 @@ package com.example.gorsovarch;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Layout;
@@ -17,8 +18,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
     List<RecentAppView> recentApps;
+    ImageView doc;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +28,8 @@ public class HomeActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         Runnable runnable = new CountDownRunner();
         Thread currTime = null;
+        doc = (ImageView) findViewById(R.id.documents);
+        doc.setOnClickListener(this);
         currTime = new Thread(runnable);
         currTime.start();
         recentApps = new ArrayList<>();
@@ -45,6 +49,16 @@ public class HomeActivity extends AppCompatActivity {
         LinearLayout recent = (LinearLayout) findViewById(R.id.linearLayoutRecentApps);
         for(int i = 0; i < recentApps.size(); i++){
             recent.addView(getView(i));
+        }
+    }
+    @Override
+    public void onClick(View view){
+        Intent i;
+        switch (view.getId()){
+            case R.id.documents:
+                i = new Intent(this, DocumentsActivity.class);
+                startActivity(i);
+                break;
         }
     }
     public void doWork() {
