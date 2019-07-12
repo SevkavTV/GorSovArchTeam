@@ -26,9 +26,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static com.example.gorsovarch.Files.openFile;
+
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
-    List<RecentAppView> recentApps;
+   List<RecentAppView> recentApps;
     ImageView doc, adobe, chrome;
+    LinearLayout recent;
+    final int DocumentsActivityID = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,18 +62,49 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         recentApps.add(new RecentAppView("Ten", 2, "№10"));
         recentApps.add(new RecentAppView("Eleven", 1, "№11"));
         recentApps.add(new RecentAppView("Twelve", 2, "№12"));
-        LinearLayout recent = (LinearLayout) findViewById(R.id.linearLayoutRecentApps);
+        recent = (LinearLayout) findViewById(R.id.linearLayoutRecentApps);
         for(int i = 0; i < recentApps.size(); i++){
             recent.addView(getView(i));
         }
     }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            Bundle extras;
+            switch (requestCode) {
+                case DocumentsActivityID:
+                    extras = data.getExtras();
+                    int maxIndex = extras.getInt("MAXINDEX");
+                    for(int i = 0; i < maxIndex; i++){
+                        String currName = extras.getString(i + "NAME");
+                        int currIdImage = extras.getInt(i + "IDIMAGE");
+                        String docName = extras.getString(i + "DOCUMENTNAME");
+                        recentApps.add(1, new RecentAppView(currName, currIdImage, docName));
+                        recent.addView(getView(1), 1);
+                    }
+                  //  List<RecentAppView> currApps = extras.getParcelable("RECENTAPPS");
+                    //for(int i = 0; i < currApps.size(); i++)
+                    //{
+                      //  recentApps.add(1, currApps.get(i));
+                       // recent.addView(getView(1), 1);
+                   // }
+                   // new_number = extras.getString("NUMBER");
+                   // new_email = extras.getString("EMAIL");
+                   // new_telegram = extras.getString("TELEGRAM");
+                   // contacts.add(new Contact(new_name, new_number, new_email, new_telegram));
+                   // uploadList();
+                    break;
+            }
+        }
+    }
+
     @Override
     public void onClick(View view){
         Intent i;
         switch (view.getId()){
             case R.id.documents:
                 i = new Intent(this, DocumentsActivity.class);
-                startActivity(i);
+                startActivityForResult(i, DocumentsActivityID);
+
                 break;
             case R.id.adobe:
                 try {
@@ -84,7 +119,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.chrome:
                 File file = new File("/storage/emulated/0/Download/lec8.pdf");
-                openFile(file);
+                Context context = this;
+                openFile(file, context);
                 break;
         }
     }
@@ -109,6 +145,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 }catch (Exception e) {}
             }
         });
+
+
     }
 
 
@@ -142,56 +180,5 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             ((ImageView) currView.findViewById(R.id.image)).setImageResource(R.drawable.i1);
         }
         return currView;
-    }
-    private void openFile(File url) {
-        Context context = this;
-        try {
-
-            Uri uri = Uri.fromFile(url);
-
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            if (url.toString().contains(".doc") || url.toString().contains(".docx")) {
-                // Word document
-                intent.setDataAndType(uri, "application/msword");
-            } else if (url.toString().contains(".pdf")) {
-                // PDF file
-                intent.setDataAndType(uri, "application/pdf");
-            } else if (url.toString().contains(".ppt") || url.toString().contains(".pptx")) {
-                // Powerpoint file
-                intent.setDataAndType(uri, "application/vnd.ms-powerpoint");
-            } else if (url.toString().contains(".xls") || url.toString().contains(".xlsx")) {
-                // Excel file
-                intent.setDataAndType(uri, "application/vnd.ms-excel");
-            } else if (url.toString().contains(".zip") || url.toString().contains(".rar")) {
-                // WAV audio file
-                intent.setDataAndType(uri, "application/x-wav");
-            } else if (url.toString().contains(".rtf")) {
-                // RTF file
-                intent.setDataAndType(uri, "application/rtf");
-            } else if (url.toString().contains(".wav") || url.toString().contains(".mp3")) {
-                // WAV audio file
-                intent.setDataAndType(uri, "audio/x-wav");
-            } else if (url.toString().contains(".gif")) {
-                // GIF file
-                intent.setDataAndType(uri, "image/gif");
-            } else if (url.toString().contains(".jpg") || url.toString().contains(".jpeg") || url.toString().contains(".png")) {
-                // JPG file
-                intent.setDataAndType(uri, "image/jpeg");
-            } else if (url.toString().contains(".txt")) {
-                // Text file
-                intent.setDataAndType(uri, "text/plain");
-            } else if (url.toString().contains(".3gp") || url.toString().contains(".mpg") ||
-                    url.toString().contains(".mpeg") || url.toString().contains(".mpe") || url.toString().contains(".mp4") || url.toString().contains(".avi")) {
-                // Video files
-                intent.setDataAndType(uri, "video/*");
-            } else {
-                intent.setDataAndType(uri, "/*");
-            }
-
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-        } catch (Exception e) {
-            Toast.makeText(context, "No application found which can open the file", Toast.LENGTH_SHORT).show();
-        }
     }
 }
