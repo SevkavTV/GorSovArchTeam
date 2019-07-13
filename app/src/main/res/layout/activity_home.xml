@@ -8,10 +8,12 @@
     android:gravity="bottom"
     tools:context=".HomeActivity"
     app:umanoDragView="@id/dragview"
+    android:id="@+id/slup"
     >
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/relative"
         >
         <HorizontalScrollView
             android:layout_width="wrap_content"
@@ -163,6 +165,13 @@
             android:text="@Gov"
             android:textSize="30sp"
             android:layout_marginLeft="10dp"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/frame">
+
+        </FrameLayout>
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -173,6 +182,5 @@
             android:layout_height="15dp"
             android:layout_centerHorizontal="true"/>
     </RelativeLayout>
-
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>
