@@ -18,6 +18,8 @@ import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -79,8 +81,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         for(int i = 0; i < recentApps.size(); i++){
             recent.addView(getView(i));
         }
-        FrameLayout frame = (FrameLayout) findViewById(R.id.frame);
-        fm = getSupportFragmentManager();
     }
     @Override
     public void onClick(View view){
@@ -102,8 +102,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.chrome:
-                File file = new File("/storage/emulated/0/Download/lec8.pdf");
-                openFile(file);
+                    i = new Intent(this, ChromeActivity.class);
+                    startActivity(i);
                 break;
             case R.id.profile:
                 View v1 = slup.getRootView();
