@@ -1,27 +1,40 @@
 package com.example.gorsovarch;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BlurMaskFilter;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.text.Layout;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,13 +46,15 @@ import static com.example.gorsovarch.Files.openFile;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
     List<RecentAppView> recentApps;
-    ImageView doc, adobe, chrome;
     ArrayList<String> arrList;
     Button closeAll;
     Context context;
     LinearLayout recent;
     boolean currCheck = false;
     final int DocumentsActivityID = 1;
+    ImageView doc, adobe, chrome, profile;
+    SlidingUpPanelLayout slup;
+    FragmentManager fm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,9 +68,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         chrome = (ImageView) findViewById(R.id.chrome);
         closeAll = (Button)findViewById(R.id.button);
         closeAll.setOnClickListener(this);
+        profile = (ImageView) findViewById(R.id.profile);
+        slup = findViewById(R.id.slup);
         doc.setOnClickListener(this);
         adobe.setOnClickListener(this);
         chrome.setOnClickListener(this);
+        profile.setOnClickListener(this);
         currTime = new Thread(runnable);
         currTime.start();
         recentApps = new ArrayList<>();
@@ -137,9 +155,24 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.chrome:
-                File file = new File("/storage/emulated/0/Download/lec8.pdf");
-                Context context = this;
-                openFile(file, context);
+                    i = new Intent(this, ChromeActivity.class);
+                    startActivity(i);
+                break;
+            case R.id.profile:
+                View v1 = slup.getRootView();
+                v1.setDrawingCacheEnabled(true);
+                Bitmap bm = v1.getDrawingCache();
+                int y = v1.getHeight()/32;
+                int z = v1.getHeight()/14;
+                int height = bm.getHeight() - y - z;
+                Bitmap new_bm = Bitmap.createBitmap(bm, 0, y, bm.getWidth(), height);
+                Bitmap blur_bm = BlurBuilder.blur(this, new_bm);
+                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                blur_bm.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                byte[] byteArray = stream.toByteArray();
+                Intent in1 = new Intent(this, ExitActivity.class);
+                in1.putExtra("background",byteArray);
+                startActivity(in1);
                 break;
             case R.id.button:
                 for(int j = 1; j < recentApps.size(); j++){
