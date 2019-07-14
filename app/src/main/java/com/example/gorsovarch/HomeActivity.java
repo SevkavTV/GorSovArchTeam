@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -24,25 +25,34 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.example.gorsovarch.Files.openFile;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
-   List<RecentAppView> recentApps;
+    List<RecentAppView> recentApps;
     ImageView doc, adobe, chrome;
+    ArrayList<String> arrList;
+    Button closeAll;
+    Context context;
     LinearLayout recent;
+    boolean currCheck = false;
     final int DocumentsActivityID = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        context = this;
         getSupportActionBar().hide();
         Runnable runnable = new CountDownRunner();
         Thread currTime = null;
         doc = (ImageView) findViewById(R.id.documents);
         adobe = (ImageView) findViewById(R.id.adobe);
         chrome = (ImageView) findViewById(R.id.chrome);
+        closeAll = (Button)findViewById(R.id.button);
+        closeAll.setOnClickListener(this);
         doc.setOnClickListener(this);
         adobe.setOnClickListener(this);
         chrome.setOnClickListener(this);
@@ -66,6 +76,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         for(int i = 0; i < recentApps.size(); i++){
             recent.addView(getView(i));
         }
+    arrList = new ArrayList<String>();
     }
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
@@ -78,20 +89,29 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                         String currName = extras.getString(i + "NAME");
                         int currIdImage = extras.getInt(i + "IDIMAGE");
                         String docName = extras.getString(i + "DOCUMENTNAME");
+                        int size = recentApps.size();
+                        for(int j = 1; j < recentApps.size(); j++){
+                            if(currName.equals(recentApps.get(j).getName())){
+                             //  Toast.makeText(HomeActivity.this, recentApps.get(j).getName() + " " + currName, Toast.LENGTH_SHORT).show();
+                                recent.removeViewAt(j);
+                                recentApps.remove(j);
+                                j--;
+                            }
+                        }
                         recentApps.add(1, new RecentAppView(currName, currIdImage, docName));
                         recent.addView(getView(1), 1);
                     }
-                  //  List<RecentAppView> currApps = extras.getParcelable("RECENTAPPS");
-                    //for(int i = 0; i < currApps.size(); i++)
-                    //{
-                      //  recentApps.add(1, currApps.get(i));
-                       // recent.addView(getView(1), 1);
-                   // }
-                   // new_number = extras.getString("NUMBER");
-                   // new_email = extras.getString("EMAIL");
-                   // new_telegram = extras.getString("TELEGRAM");
-                   // contacts.add(new Contact(new_name, new_number, new_email, new_telegram));
-                   // uploadList();
+                    /*for(int i = 1; i < recentApps.size() - 1; i++)
+                        for(int j = i + 1; j < recentApps.size(); j++){
+                            if( ( recentApps.get(i) ).getName() == ( recentApps.get(j) ).getName()){
+                                recentApps.remove( j );
+                                recent.removeViewAt( j );
+                                j--;
+                            //    File file = new File("/storage/emulated/0/Download/lec8.pdf");
+                              //  Context context = this;
+                               // openFile(file, context);
+                            }
+                        }*/
                     break;
             }
         }
@@ -104,7 +124,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.documents:
                 i = new Intent(this, DocumentsActivity.class);
                 startActivityForResult(i, DocumentsActivityID);
-
                 break;
             case R.id.adobe:
                 try {
@@ -122,6 +141,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 Context context = this;
                 openFile(file, context);
                 break;
+            case R.id.button:
+                for(int j = 1; j < recentApps.size(); j++){
+                    boolean f = false;
+                    for(int k = 0; k < arrList.size(); k++)
+                        if(recentApps.get(j).getName().equals(arrList.get(k))) {f = true; break;}
+                    if(!f) {recent.removeViewAt(j);recentApps.remove(j);j--;
+                    }
+                    currCheck = false;
+                    closeAll.setVisibility(View.INVISIBLE);
+
+                }
+
         }
     }
     public void doWork() {
@@ -145,8 +176,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 }catch (Exception e) {}
             }
         });
-
-
     }
 
 
@@ -164,21 +193,94 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-    public View getView(int index){
-        View currView;
+
+    // 150103
+    public View getView(final int index){
+        final View currView;
+         final String currName;
         LayoutInflater inflater1 = getLayoutInflater();
         if(index == 0){
+            currName = recentApps.get(index).name;
             currView = inflater1.inflate(R.layout.recent_app_empty, null, false);
             ((TextView) currView.findViewById(R.id.app_name)).setText(recentApps.get(index).name);
             ((TextView) currView.findViewById(R.id.doc_name)).setText(recentApps.get(index).documentName);
             ((ImageView) currView.findViewById(R.id.image)).setImageResource(R.drawable.i1);
+            return  currView;
         }
        else {
+            currName = recentApps.get(index).name;
             currView = inflater1.inflate(R.layout.recent_app, null, false);
             ((TextView) currView.findViewById(R.id.app_name)).setText(recentApps.get(index).name);
             ((TextView) currView.findViewById(R.id.doc_name)).setText(recentApps.get(index).documentName);
             ((ImageView) currView.findViewById(R.id.image)).setImageResource(R.drawable.i1);
+            currView.findViewById(R.id.imageButtonCancel).setVisibility(View.INVISIBLE);
+            currView.findViewById(R.id.imageButtonDelete).setVisibility(View.INVISIBLE);
+            currView.findViewById(R.id.imageButtonLock).setVisibility(View.INVISIBLE);
         }
+        currView.findViewById(R.id.imageButtonDelete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for(int i = 1; i < recentApps.size(); i++)
+                    if(recentApps.get(i).getName().equals(currName)){
+                        recent.removeViewAt(i);
+                        recentApps.remove(i);
+                        break;
+                    }
+                for(int i = 0; i < arrList.size(); i++)
+                    if(arrList.get(i).equals(currName)) arrList.remove(i);
+                    currCheck = false;
+                    closeAll.setVisibility(View.INVISIBLE);
+            }
+        });
+       currView.findViewById(R.id.imageButtonLock).setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               currView.findViewById(R.id.imageButtonLock).setEnabled(false);
+               currCheck = false;
+               arrList.add(currName);
+               currView.findViewById(R.id.imageButtonCancel).setVisibility(View.INVISIBLE);
+               currView.findViewById(R.id.imageButtonDelete).setVisibility(View.INVISIBLE);
+               currView.findViewById(R.id.imageButtonLock).setVisibility(View.INVISIBLE);
+               closeAll.setVisibility(View.INVISIBLE);
+           }
+       });
+        currView.findViewById(R.id.imageButtonCancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            currCheck = false;
+                currView.findViewById(R.id.imageButtonCancel).setVisibility(View.INVISIBLE);
+                currView.findViewById(R.id.imageButtonDelete).setVisibility(View.INVISIBLE);
+                currView.findViewById(R.id.imageButtonLock).setVisibility(View.INVISIBLE);
+                closeAll.setVisibility(View.INVISIBLE);
+            }
+        });
+       currView.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               if(!currCheck){
+               Documents currDocument;
+               for(int i = 0; i < recentApps.size(); i++){
+                   if(recentApps.get(i).getName().equals(currName)) {recentApps.add(1, recentApps.get(i));
+                   recent.addView(getView(1), 1);
+                   recentApps.remove(i + 1);recent.removeViewAt(i + 1); break;}
+               }
+               File file = new File("/storage/emulated/0/Download/" + currName);
+               openFile(file, context);}
+           }
+       });
+       currView.setOnLongClickListener(new View.OnLongClickListener() {
+           @Override
+           public boolean onLongClick(View view) {
+               if(!currCheck){
+                   currCheck = true;
+                   currView.findViewById(R.id.imageButtonCancel).setVisibility(View.VISIBLE);
+                   currView.findViewById(R.id.imageButtonDelete).setVisibility(View.VISIBLE);
+                   currView.findViewById(R.id.imageButtonLock).setVisibility(View.VISIBLE);
+                   closeAll.setVisibility(View.VISIBLE);
+               return true;}
+               return  false;
+           }
+       });
         return currView;
     }
 }
