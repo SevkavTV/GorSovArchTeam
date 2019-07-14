@@ -14,11 +14,13 @@ import java.util.zip.Inflater;
 public class RecentAppView extends Activity {
     String name, documentName;
     int imageId;
-    View currView;
     RecentAppView(String name, int imageId, String documentName){
         this.name = name;
         this.imageId = imageId;
         this.documentName = documentName;
+    }
+    String getName(){
+        return  name;
     }
 
 }

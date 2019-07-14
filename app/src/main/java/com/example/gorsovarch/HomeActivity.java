@@ -38,10 +38,20 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.example.gorsovarch.Files.openFile;
 
 public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
     List<RecentAppView> recentApps;
+    ArrayList<String> arrList;
+    Button closeAll;
+    Context context;
+    LinearLayout recent;
+    boolean currCheck = false;
+    final int DocumentsActivityID = 1;
     ImageView doc, adobe, chrome, profile;
     SlidingUpPanelLayout slup;
     FragmentManager fm;
@@ -49,12 +59,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        context = this;
         getSupportActionBar().hide();
         Runnable runnable = new CountDownRunner();
         Thread currTime = null;
         doc = (ImageView) findViewById(R.id.documents);
         adobe = (ImageView) findViewById(R.id.adobe);
         chrome = (ImageView) findViewById(R.id.chrome);
+        closeAll = (Button)findViewById(R.id.button);
+        closeAll.setOnClickListener(this);
         profile = (ImageView) findViewById(R.id.profile);
         slup = findViewById(R.id.slup);
         doc.setOnClickListener(this);
@@ -77,18 +90,58 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         recentApps.add(new RecentAppView("Ten", 2, "№10"));
         recentApps.add(new RecentAppView("Eleven", 1, "№11"));
         recentApps.add(new RecentAppView("Twelve", 2, "№12"));
-        LinearLayout recent = (LinearLayout) findViewById(R.id.linearLayoutRecentApps);
+        recent = (LinearLayout) findViewById(R.id.linearLayoutRecentApps);
         for(int i = 0; i < recentApps.size(); i++){
             recent.addView(getView(i));
         }
+    arrList = new ArrayList<String>();
     }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            Bundle extras;
+            switch (requestCode) {
+                case DocumentsActivityID:
+                    extras = data.getExtras();
+                    int maxIndex = extras.getInt("MAXINDEX");
+                    for(int i = 0; i < maxIndex; i++){
+                        String currName = extras.getString(i + "NAME");
+                        int currIdImage = extras.getInt(i + "IDIMAGE");
+                        String docName = extras.getString(i + "DOCUMENTNAME");
+                        int size = recentApps.size();
+                        for(int j = 1; j < recentApps.size(); j++){
+                            if(currName.equals(recentApps.get(j).getName())){
+                             //  Toast.makeText(HomeActivity.this, recentApps.get(j).getName() + " " + currName, Toast.LENGTH_SHORT).show();
+                                recent.removeViewAt(j);
+                                recentApps.remove(j);
+                                j--;
+                            }
+                        }
+                        recentApps.add(1, new RecentAppView(currName, currIdImage, docName));
+                        recent.addView(getView(1), 1);
+                    }
+                    /*for(int i = 1; i < recentApps.size() - 1; i++)
+                        for(int j = i + 1; j < recentApps.size(); j++){
+                            if( ( recentApps.get(i) ).getName() == ( recentApps.get(j) ).getName()){
+                                recentApps.remove( j );
+                                recent.removeViewAt( j );
+                                j--;
+                            //    File file = new File("/storage/emulated/0/Download/lec8.pdf");
+                              //  Context context = this;
+                               // openFile(file, context);
+                            }
+                        }*/
+                    break;
+            }
+        }
+    }
+
     @Override
     public void onClick(View view){
         Intent i;
         switch (view.getId()){
             case R.id.documents:
                 i = new Intent(this, DocumentsActivity.class);
-                startActivity(i);
+                startActivityForResult(i, DocumentsActivityID);
                 break;
             case R.id.adobe:
                 try {
@@ -121,6 +174,18 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 in1.putExtra("background",byteArray);
                 startActivity(in1);
                 break;
+            case R.id.button:
+                for(int j = 1; j < recentApps.size(); j++){
+                    boolean f = false;
+                    for(int k = 0; k < arrList.size(); k++)
+                        if(recentApps.get(j).getName().equals(arrList.get(k))) {f = true; break;}
+                    if(!f) {recent.removeViewAt(j);recentApps.remove(j);j--;
+                    }
+                    currCheck = false;
+                    closeAll.setVisibility(View.INVISIBLE);
+
+                }
+
         }
     }
     public void doWork() {
@@ -161,72 +226,94 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-    public View getView(int index){
-        View currView;
+
+    // 150103
+    public View getView(final int index){
+        final View currView;
+         final String currName;
         LayoutInflater inflater1 = getLayoutInflater();
         if(index == 0){
+            currName = recentApps.get(index).name;
             currView = inflater1.inflate(R.layout.recent_app_empty, null, false);
             ((TextView) currView.findViewById(R.id.app_name)).setText(recentApps.get(index).name);
             ((TextView) currView.findViewById(R.id.doc_name)).setText(recentApps.get(index).documentName);
             ((ImageView) currView.findViewById(R.id.image)).setImageResource(R.drawable.i1);
+            return  currView;
         }
        else {
+            currName = recentApps.get(index).name;
             currView = inflater1.inflate(R.layout.recent_app, null, false);
             ((TextView) currView.findViewById(R.id.app_name)).setText(recentApps.get(index).name);
             ((TextView) currView.findViewById(R.id.doc_name)).setText(recentApps.get(index).documentName);
             ((ImageView) currView.findViewById(R.id.image)).setImageResource(R.drawable.i1);
+            currView.findViewById(R.id.imageButtonCancel).setVisibility(View.INVISIBLE);
+            currView.findViewById(R.id.imageButtonDelete).setVisibility(View.INVISIBLE);
+            currView.findViewById(R.id.imageButtonLock).setVisibility(View.INVISIBLE);
         }
-        return currView;
-    }
-    private void openFile(File url) {
-        Context context = this;
-        try {
-
-            Uri uri = Uri.fromFile(url);
-
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            if (url.toString().contains(".doc") || url.toString().contains(".docx")) {
-                // Word document
-                intent.setDataAndType(uri, "application/msword");
-            } else if (url.toString().contains(".pdf")) {
-                // PDF file
-                intent.setDataAndType(uri, "application/pdf");
-            } else if (url.toString().contains(".ppt") || url.toString().contains(".pptx")) {
-                // Powerpoint file
-                intent.setDataAndType(uri, "application/vnd.ms-powerpoint");
-            } else if (url.toString().contains(".xls") || url.toString().contains(".xlsx")) {
-                // Excel file
-                intent.setDataAndType(uri, "application/vnd.ms-excel");
-            } else if (url.toString().contains(".zip") || url.toString().contains(".rar")) {
-                // WAV audio file
-                intent.setDataAndType(uri, "application/x-wav");
-            } else if (url.toString().contains(".rtf")) {
-                // RTF file
-                intent.setDataAndType(uri, "application/rtf");
-            } else if (url.toString().contains(".wav") || url.toString().contains(".mp3")) {
-                // WAV audio file
-                intent.setDataAndType(uri, "audio/x-wav");
-            } else if (url.toString().contains(".gif")) {
-                // GIF file
-                intent.setDataAndType(uri, "image/gif");
-            } else if (url.toString().contains(".jpg") || url.toString().contains(".jpeg") || url.toString().contains(".png")) {
-                // JPG file
-                intent.setDataAndType(uri, "image/jpeg");
-            } else if (url.toString().contains(".txt")) {
-                // Text file
-                intent.setDataAndType(uri, "text/plain");
-            } else if (url.toString().contains(".3gp") || url.toString().contains(".mpg") ||
-                    url.toString().contains(".mpeg") || url.toString().contains(".mpe") || url.toString().contains(".mp4") || url.toString().contains(".avi")) {
-                // Video files
-                intent.setDataAndType(uri, "video/*");
-            } else {
-                intent.setDataAndType(uri, "/*");
+        currView.findViewById(R.id.imageButtonDelete).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                for(int i = 1; i < recentApps.size(); i++)
+                    if(recentApps.get(i).getName().equals(currName)){
+                        recent.removeViewAt(i);
+                        recentApps.remove(i);
+                        break;
+                    }
+                for(int i = 0; i < arrList.size(); i++)
+                    if(arrList.get(i).equals(currName)) arrList.remove(i);
+                    currCheck = false;
+                    closeAll.setVisibility(View.INVISIBLE);
             }
-
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(intent);
-        } catch (Exception e) {
-            Toast.makeText(context, "No application found which can open the file", Toast.LENGTH_SHORT).show();
-        }
+        });
+       currView.findViewById(R.id.imageButtonLock).setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               currView.findViewById(R.id.imageButtonLock).setEnabled(false);
+               currCheck = false;
+               arrList.add(currName);
+               currView.findViewById(R.id.imageButtonCancel).setVisibility(View.INVISIBLE);
+               currView.findViewById(R.id.imageButtonDelete).setVisibility(View.INVISIBLE);
+               currView.findViewById(R.id.imageButtonLock).setVisibility(View.INVISIBLE);
+               closeAll.setVisibility(View.INVISIBLE);
+           }
+       });
+        currView.findViewById(R.id.imageButtonCancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            currCheck = false;
+                currView.findViewById(R.id.imageButtonCancel).setVisibility(View.INVISIBLE);
+                currView.findViewById(R.id.imageButtonDelete).setVisibility(View.INVISIBLE);
+                currView.findViewById(R.id.imageButtonLock).setVisibility(View.INVISIBLE);
+                closeAll.setVisibility(View.INVISIBLE);
+            }
+        });
+       currView.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               if(!currCheck){
+               Documents currDocument;
+               for(int i = 0; i < recentApps.size(); i++){
+                   if(recentApps.get(i).getName().equals(currName)) {recentApps.add(1, recentApps.get(i));
+                   recent.addView(getView(1), 1);
+                   recentApps.remove(i + 1);recent.removeViewAt(i + 1); break;}
+               }
+               File file = new File("/storage/emulated/0/Download/" + currName);
+               openFile(file, context);}
+           }
+       });
+       currView.setOnLongClickListener(new View.OnLongClickListener() {
+           @Override
+           public boolean onLongClick(View view) {
+               if(!currCheck){
+                   currCheck = true;
+                   currView.findViewById(R.id.imageButtonCancel).setVisibility(View.VISIBLE);
+                   currView.findViewById(R.id.imageButtonDelete).setVisibility(View.VISIBLE);
+                   currView.findViewById(R.id.imageButtonLock).setVisibility(View.VISIBLE);
+                   closeAll.setVisibility(View.VISIBLE);
+               return true;}
+               return  false;
+           }
+       });
+        return currView;
     }
 }
