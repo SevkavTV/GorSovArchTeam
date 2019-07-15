@@ -2,22 +2,15 @@ package com.example.gorsovarch;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.ActivityNotFoundException;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Parcelable;
-import android.view.LayoutInflater;
+import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
@@ -29,18 +22,29 @@ import static com.example.gorsovarch.Files.openFile;
 public class DocumentsActivity extends AppCompatActivity {
     ArrayList< Documents > ls;
     List<RecentAppView> recentapp;
+    public static ArrayList<String> mishaXyuSosi;
     Context context;
     ListView lv;
     static public boolean check = false;
     public int MAXINDEX = 0;
     Intent intentBack;
     DocumentsAdapter documentsAdapter;
+    ProgressDialog pd;
+    public static ArrayList<String> fileList = new ArrayList<>();
+    Handler handler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_documents);
         context = this;
+        handler = new Handler();
+        mishaXyuSosi = new ArrayList<String>();
+        getFTPFileList();
+            Toast.makeText(this, "" + mishaXyuSosi.size(), Toast.LENGTH_SHORT).show();
             ls = new ArrayList<Documents>();
+            for(int i = 0; i < DocumentsActivity.fileList.size(); i++) {
+                ls.add(new Documents(DocumentsActivity.fileList.get(i), "2000", false));
+            }
             ls.add(new Documents("lec8.pdf", "2000", false));
             ls.add(new Documents("contest-10122-uk.pdf", "30000", false));
             ls.add(new Documents("storya-godinnika.docx", "4000000", false));
@@ -85,9 +89,6 @@ public class DocumentsActivity extends AppCompatActivity {
                   alert.show();
               }
               else{
-                //  recentApps.add(new RecentAppView(p.name, 1, " xuy "));
-                  //recentapp.add(new RecentAppView(p.name, 1, " xuy "));
-
                       File file = new File("/storage/emulated/0/Download/" + p.name);
                       openFile(file, context);
                       if(!check){
@@ -97,8 +98,6 @@ public class DocumentsActivity extends AppCompatActivity {
                           MAXINDEX++;
                       }
                       check = false;
-                //  LinearLayout recent = (LinearLayout) findViewById(R.id.linearLayoutRecentApps);
-              //   recent.addView(getView(1), 1);
               }
           }
       });
@@ -106,10 +105,24 @@ public class DocumentsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-      //  intentBack.putExtra("RECENTAPPS", (Parcelable) recentapp);
         intentBack.putExtra("MAXINDEX", MAXINDEX);
         setResult(RESULT_OK, intentBack);
         finish();
-     //   super.onBackPressed();
+    }
+   private void getFTPFileList() {
+        pd = ProgressDialog.show(DocumentsActivity.this, "", "Getting Files...",
+                true, false);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    DocumentsActivity.fileList = MyFTPClientFunctions.ftpclient.ftpPrintFilesList("/");
+                    handler.sendEmptyMessage(1);
+                }catch (Exception e){
+                    Toast.makeText(DocumentsActivity.this, "Cannot get list of documents", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }).start();
+        pd.dismiss();
     }
 }
