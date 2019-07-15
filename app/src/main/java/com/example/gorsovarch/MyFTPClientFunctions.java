@@ -16,19 +16,21 @@ public class MyFTPClientFunctions {
     public FTPClient mFTPClient = null;
     public boolean ftpConnect(String host, String username, String password,
                               int port) {
+        boolean status = false;
         try {
             mFTPClient = new FTPClient();
             mFTPClient.connect(host, port);
             if (FTPReply.isPositiveCompletion(mFTPClient.getReplyCode())) {
-                boolean status = mFTPClient.login(username, password);
+                status = mFTPClient.login(username, password);
                 mFTPClient.setFileType(FTP.BINARY_FILE_TYPE);
                 mFTPClient.enterLocalPassiveMode();
                 return status;
             }
         } catch (Exception e) {
             Log.d(TAG, "Error: could not connect to host " + host);
+
         }
-        return false;
+        return status;
     }
     public boolean ftpDisconnect() {
         try {
