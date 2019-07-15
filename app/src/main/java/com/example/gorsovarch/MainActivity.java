@@ -32,10 +32,10 @@ public class MainActivity extends AppCompatActivity {
     Button enter;
     Context context = this;
     String ssid_temp = "";
-    String username, password, HOST = "192.168.1.26";
+    String username, password, HOST = "192.168.1.27";
     MyFTPClientFunctions clientFunctions;
-    MyFTPClientFunctions ftpclient;
-    public static final String ssid_default = "4ipNet_Shkola";
+    static MyFTPClientFunctions ftpclient;
+    public static final String ssid_default = "4ipNet_Internan";
     ProgressDialog pd;
     Handler handler;
     boolean status;
@@ -64,9 +64,12 @@ public class MainActivity extends AppCompatActivity {
                 username = editLogin.getText().toString();
                 password = editPassword.getText().toString();
                 clientFunctions = new MyFTPClientFunctions();
-                    try{connectToFTPAdress();
+                    try{
+                        connectToFTPAdress();
                     Intent i = new Intent(MainActivity.this, HomeActivity.class);
-                    startActivity(i);}
+                    i.putExtra("User", username);
+                    startActivity(i);
+                    }
                     catch (Exception e){
                         Toast.makeText(MainActivity.this, "Cannot connect", Toast.LENGTH_SHORT).show();
                     }
@@ -134,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
     public void connectToFTPAdress() {
-        ftpclient = new MyFTPClientFunctions();
         handler = new Handler();
         status = false;
         if (HOST.length() < 1) {
@@ -151,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                     true, false);
             new Thread(new Runnable() {
                 public void run() {
-                    status = ftpclient.ftpConnect(HOST, username, password, 21);
+                    status = MyFTPClientFunctions.ftpclient.ftpConnect(HOST, username, password, 21);
                     if (status == true) {
                         Log.d(TAG, "Connection Success");
                         handler.sendEmptyMessage(0);
