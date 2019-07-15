@@ -2,7 +2,7 @@ package com.example.gorsovarch;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-
+import com.example.gorsovarch.MyFTPClientFunctions;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,12 +11,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 public class ExitActivity extends AppCompatActivity {
     Button btnExit;
     ImageView btnCancel;
     ConstraintLayout cl;
     ImageView im;
+    MyFTPClientFunctions clientFunctions;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,13 +37,17 @@ public class ExitActivity extends AppCompatActivity {
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(ExitActivity.this, MainActivity.class);
-                startActivity(i);
+                try {
+                    clientFunctions = new MyFTPClientFunctions();
+                    clientFunctions.ftpDisconnect();
+                    Intent i = new Intent(ExitActivity.this, MainActivity.class);
+                    startActivity(i);
+                } catch (Exception e) {
+                    Toast.makeText(ExitActivity.this, "Cannot logout", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         Bundle extras = getIntent().getExtras();
-        //Bitmap background = extras.getParcelable("BACKGROUND");
-        //im.setImageBitmap(background);
         byte[] byteArray = extras.getByteArray("background");
         Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         BitmapDrawable bitmapDrawable = new BitmapDrawable(this.getResources(),bmp);

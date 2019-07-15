@@ -39,8 +39,8 @@ public class MyFTPClientFunctions {
             return true;
         } catch (Exception e) {
             Log.d(TAG, "Error occurred while disconnecting from ftp server.");
+            return false;
         }
-        return false;
     }
     public String ftpGetCurrentWorkingDirectory() {
         try {
