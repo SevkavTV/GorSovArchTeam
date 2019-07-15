@@ -1,6 +1,7 @@
 package com.example.gorsovarch;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentManager;
 
 import android.app.ProgressDialog;
@@ -57,8 +58,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     boolean currCheck = false;
     final int DocumentsActivityID = 1;
     ImageView doc, adobe, chrome, profile;
+
+    ConstraintLayout slup;
     TextView txtUserName;
-    SlidingUpPanelLayout slup;
+
     FragmentManager fm;
     RelativeLayout rl;
     ProgressDialog pd;

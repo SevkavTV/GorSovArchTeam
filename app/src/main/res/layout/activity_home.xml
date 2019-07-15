@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_gravity="bottom"
@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:gravity="bottom"
     tools:context=".HomeActivity"
-    app:umanoDragView="@id/dragview"
     android:id="@+id/slup"
     >
 
@@ -21,7 +20,7 @@
             android:layout_height="wrap_content"
             android:scrollbars="none"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="400dp"
+            android:layout_marginTop="420dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.444"
@@ -55,8 +54,8 @@
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_toLeftOf="@id/documents"
-            android:layout_centerInParent="true"
             android:layout_marginRight="50dp"
+            android:layout_marginTop="240dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.33"
@@ -70,8 +69,7 @@
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="200dp"
-            android:layout_centerInParent="true"
+            android:layout_marginTop="240dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.495"
@@ -86,8 +84,7 @@
             android:layout_height="75dp"
             android:layout_toRightOf="@id/documents"
             android:layout_marginLeft="50dp"
-            android:layout_marginTop="200dp"
-            android:layout_centerInParent="true"
+            android:layout_marginTop="240dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.66"
@@ -163,7 +160,7 @@
             android:layout_height="40dp"
             android:layout_marginTop="15dp"
             android:layout_toRightOf="@id/profile"
-            android:text="@Gov"
+            android:text="Gov"
             android:textSize="30sp"
             android:layout_marginLeft="10dp"/>
 
@@ -174,16 +171,10 @@
             android:text="Очистити все"
             android:visibility="invisible"
             android:layout_centerHorizontal="true"
+            android:layout_below="@id/documents"
+            android:layout_marginTop="300dp"/>
             android:layout_marginTop="200dp"/>
     </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:id="@+id/dragview">
-        <Button
-            android:layout_width="100dp"
-            android:layout_height="15dp"
-            android:layout_centerHorizontal="true"/>
-    </RelativeLayout>
+  
 
-</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
