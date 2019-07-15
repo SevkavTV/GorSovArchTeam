@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String ssid_default = "4ipNet_Shkola";
     ProgressDialog pd;
     Handler handler;
-    boolean status = true;
+    boolean status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +64,10 @@ public class MainActivity extends AppCompatActivity {
                 username = editLogin.getText().toString();
                 password = editPassword.getText().toString();
                 clientFunctions = new MyFTPClientFunctions();
-                    if(connectToFTPAdress()){
+                    try{connectToFTPAdress();
                     Intent i = new Intent(MainActivity.this, HomeActivity.class);
                     startActivity(i);}
-                    else {
+                    catch (Exception e){
                         Toast.makeText(MainActivity.this, "Cannot connect", Toast.LENGTH_SHORT).show();
                     }
             }
@@ -133,9 +133,10 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    public boolean connectToFTPAdress() {
+    public void connectToFTPAdress() {
         ftpclient = new MyFTPClientFunctions();
         handler = new Handler();
+        status = false;
         if (HOST.length() < 1) {
             Toast.makeText(MainActivity.this, "Please Enter Host Address!",
                     Toast.LENGTH_LONG).show();
@@ -162,7 +163,6 @@ public class MainActivity extends AppCompatActivity {
             }).start();
         }
         pd.dismiss();
-        return status;
     }
 }
 
