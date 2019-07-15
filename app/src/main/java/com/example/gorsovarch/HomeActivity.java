@@ -3,6 +3,7 @@ package com.example.gorsovarch;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.os.Handler;
 import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -59,6 +61,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     SlidingUpPanelLayout slup;
     FragmentManager fm;
     RelativeLayout rl;
+    ProgressDialog pd;
+    Handler handler;
+    TextView tv;
+    String username;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +86,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         adobe.setOnClickListener(this);
         chrome.setOnClickListener(this);
         profile.setOnClickListener(this);
+        tv = (TextView)findViewById(R.id.userName);
+        Bundle extras = getIntent().getExtras();
+        username = extras.getString("User");
+        tv.setText("@"+username);
         currTime = new Thread(runnable);
         currTime.start();
         recentApps = new ArrayList<>();
@@ -194,6 +204,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 byte[] byteArray = stream.toByteArray();
                 Intent in1 = new Intent(this, ExitActivity.class);
                 in1.putExtra("background",byteArray);
+                in1.putExtra("User", username);
                 startActivity(in1);
                 break;
             case R.id.button:

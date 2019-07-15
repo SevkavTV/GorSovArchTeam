@@ -2,7 +2,7 @@ package com.example.gorsovarch;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-
+import com.example.gorsovarch.MyFTPClientFunctions;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,17 +11,25 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class ExitActivity extends AppCompatActivity {
     Button btnExit;
     ImageView btnCancel;
     ConstraintLayout cl;
     ImageView im;
+    TextView tv;
+    MyFTPClientFunctions clientFunctions;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exit);
         getSupportActionBar().hide();
+        tv = (TextView)findViewById(R.id.userName);
+        Bundle extras = getIntent().getExtras();
+        String username = extras.getString("User");
+        tv.setText("@"+username);
         cl = findViewById(R.id.constraintLayout);
         btnCancel = findViewById(R.id.cancel);
         btnExit = findViewById(R.id.exit);
@@ -32,17 +40,22 @@ public class ExitActivity extends AppCompatActivity {
                 finish();
             }
         });
+        clientFunctions = new MyFTPClientFunctions();
         btnExit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(ExitActivity.this, MainActivity.class);
-                startActivity(i);
+                try {
+                    if(MyFTPClientFunctions.ftpclient.ftpDisconnect()) {
+                        Intent i = new Intent(ExitActivity.this, MainActivity.class);
+                        startActivity(i);
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(ExitActivity.this, "Cannot logout", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-        Bundle extras = getIntent().getExtras();
-        //Bitmap background = extras.getParcelable("BACKGROUND");
-        //im.setImageBitmap(background);
-        byte[] byteArray = extras.getByteArray("background");
+        Bundle extras1 = getIntent().getExtras();
+        byte[] byteArray = extras1.getByteArray("background");
         Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         BitmapDrawable bitmapDrawable = new BitmapDrawable(this.getResources(),bmp);
         cl.setBackground(bitmapDrawable);
