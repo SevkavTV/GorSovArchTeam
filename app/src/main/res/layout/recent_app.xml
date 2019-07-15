@@ -7,8 +7,8 @@
 
     <LinearLayout
         android:id="@+id/layoutExampleRecentApp"
-        android:layout_width="314dp"
-        android:layout_height="160dp"
+        android:layout_width="200dp"
+        android:layout_height="150dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,7 +21,6 @@
             android:id="@+id/app_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:text="TextView" />
 
         <ImageView
@@ -34,19 +33,21 @@
             android:id="@+id/doc_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:text="TextView" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="horizontal">
 
             <ImageButton
                 android:id="@+id/imageButtonLock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
                 android:layout_weight="1"
+                android:background="@drawable/roundedimagebtn"
                 app:srcCompat="@android:drawable/ic_lock_lock" />
 
             <ImageButton
@@ -54,13 +55,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@drawable/roundedimagebtn"
                 app:srcCompat="@android:drawable/ic_menu_delete" />
 
             <ImageButton
                 android:id="@+id/imageButtonCancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
                 android:layout_weight="1"
+                android:background="@drawable/roundedimagebtn"
                 app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
 
         </LinearLayout>

@@ -3,12 +3,26 @@ package com.example.gorsovarch;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
+
+import static androidx.core.content.ContextCompat.startActivity;
 import static com.example.gorsovarch.DocumentsActivity.*;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
 public class Files {
+
     static void openFile(File url, Context context) {
         try {
             Uri uri = Uri.fromFile(url);
@@ -58,4 +72,101 @@ public class Files {
             Toast.makeText(context, "Файл не знайдено", Toast.LENGTH_SHORT).show();
         }
     }
+ /* static  void writeFile() {
+        try {
+            // отрываем поток для записи
+            BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+                    this.openFileOutput(FILENAME, MODE_APPEND)));
+
+            // пишем данные
+            bw.write("Содержимое файла");
+            // закрываем поток
+            bw.close();
+          //  Log.d(LOG_TAG, "Файл записан");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+  static  void readFile() {
+        try {
+            // открываем поток для чтения
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    openFileInput(FILENAME)));
+            String str = "";
+            // читаем содержимое
+            while ((str = br.readLine()) != null) {
+                Log.d(LOG_TAG, str);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
+
+ /*  static void writeFileSD(ArrayList<String> curr) {
+        // проверяем доступность SD
+        if (!Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED)) {
+         //   Log.d(LOG_TAG, "SD-карта не доступна: " + Environment.getExternalStorageState());
+            return;
+        }
+       //Log.d(LOG_TAG, "SD-карта не доступна: " + Environment.getExternalStorageState());
+        // получаем путь к SD
+        File sdPath = Environment.getExternalStorageDirectory();
+        // добавляем свой каталог к пути
+        sdPath = new File(sdPath.getAbsolutePath() + "/" + DIR_SD);
+        // создаем каталог
+        sdPath.mkdirs();
+        // формируем объект File, который содержит путь к файлу
+        File sdFile = new File(sdPath, FILENAME_SD);
+        try {
+            // открываем поток для записи
+            BufferedWriter bw = new BufferedWriter(new FileWriter(sdFile));
+            // пишем данные
+            for(int i = 0; i < curr.size(); i++)
+            bw.write(curr.get(i));
+            // закрываем поток
+           // bw.flush();
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+   static ArrayList<String> readFileSD() {
+       ArrayList<String> curr = new ArrayList<String>();
+        // проверяем доступность SD
+        if (!Environment.getExternalStorageState().equals(
+                Environment.MEDIA_MOUNTED)) {
+            Log.d(LOG_TAG, "SD-карта не доступна: " + Environment.getExternalStorageState());
+            return curr;
+        }
+        // получаем путь к SD
+        File sdPath = Environment.getExternalStorageDirectory();
+        // добавляем свой каталог к пути
+        sdPath = new File(sdPath.getAbsolutePath() + "/" + DIR_SD);
+        // формируем объект File, который содержит путь к файлу
+        File sdFile = new File(sdPath, FILENAME_SD);
+        try {
+            // открываем поток для чтения
+            BufferedReader br = new BufferedReader(new FileReader(sdFile));
+            String str = "";
+            // читаем содержимое
+            while ((str = br.readLine()) != null) {
+                curr.add(str);
+               // Log.d(LOG_TAG, str);
+            }
+            return curr;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return curr;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return curr;
+        }
+    }*/
 }

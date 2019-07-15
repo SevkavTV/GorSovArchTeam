@@ -31,6 +31,8 @@ import android.widget.Toast;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
+import org.w3c.dom.Text;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -53,8 +55,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     boolean currCheck = false;
     final int DocumentsActivityID = 1;
     ImageView doc, adobe, chrome, profile;
+    TextView txtUserName;
     SlidingUpPanelLayout slup;
     FragmentManager fm;
+    RelativeLayout rl;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,10 +67,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         getSupportActionBar().hide();
         Runnable runnable = new CountDownRunner();
         Thread currTime = null;
+        txtUserName = (TextView) findViewById(R.id.userName);
         doc = (ImageView) findViewById(R.id.documents);
         adobe = (ImageView) findViewById(R.id.adobe);
         chrome = (ImageView) findViewById(R.id.chrome);
         closeAll = (Button)findViewById(R.id.button);
+        rl = (RelativeLayout) findViewById(R.id.relative);
         closeAll.setOnClickListener(this);
         profile = (ImageView) findViewById(R.id.profile);
         slup = findViewById(R.id.slup);
@@ -145,6 +151,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.adobe:
                 try {
+                    for(int j = 1; j < recentApps.size(); j++)
+                        if(recentApps.get(j).getName().equals("Adobe Reader")) {
+                            recentApps.remove(j);
+                            recent.removeViewAt(j);
+                            j--;
+                        }
+                    recentApps.add(1, new RecentAppView("Adobe Reader", 1, "Госсов"));
+                    recent.addView(getView(1), 1);
                     Context ctx = this;
                     i = ctx.getPackageManager().getLaunchIntentForPackage("com.adobe.reader");
                     ctx.startActivity(i);
@@ -155,6 +169,14 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.chrome:
+                for(int j = 1; j < recentApps.size(); j++)
+                    if(recentApps.get(j).getName().equals("Google Chrome")) {
+                        recentApps.remove(j);
+                        recent.removeViewAt(j);
+                        j--;
+                    }
+                    recentApps.add(1, new RecentAppView("Google Chrome", 1, "Госсов"));
+                    recent.addView(getView(1), 1);
                     i = new Intent(this, ChromeActivity.class);
                     startActivity(i);
                 break;
@@ -183,9 +205,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     currCheck = false;
                     closeAll.setVisibility(View.INVISIBLE);
-
                 }
-
         }
     }
     public void doWork() {
@@ -226,8 +246,27 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-
     // 150103
+    public void AlphaAllView(){
+        for(int i = 0; i < recentApps.size(); i++){
+            recent.getChildAt(i).setAlpha(0.1f);
+        }
+        adobe.setAlpha(0.1f);
+        chrome.setAlpha(0.1f);
+        doc.setAlpha(0.1f);
+        profile.setAlpha(0.1f);
+        txtUserName.setAlpha(0.1f);
+    }
+    public void BackAlphaAllView(){
+        for(int i = 0; i < recentApps.size(); i++){
+            recent.getChildAt(i).setAlpha(1f);
+        }
+        adobe.setAlpha(1f);
+        chrome.setAlpha(1f);
+        doc.setAlpha(1f);
+        profile.setAlpha(1f);
+        txtUserName.setAlpha(1f);
+    }
     public View getView(final int index){
         final View currView;
          final String currName;
@@ -263,6 +302,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     if(arrList.get(i).equals(currName)) arrList.remove(i);
                     currCheck = false;
                     closeAll.setVisibility(View.INVISIBLE);
+                BackAlphaAllView();
+                currView.setAlpha(1f);
             }
         });
        currView.findViewById(R.id.imageButtonLock).setOnClickListener(new View.OnClickListener() {
@@ -275,6 +316,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                currView.findViewById(R.id.imageButtonDelete).setVisibility(View.INVISIBLE);
                currView.findViewById(R.id.imageButtonLock).setVisibility(View.INVISIBLE);
                closeAll.setVisibility(View.INVISIBLE);
+               BackAlphaAllView();
+               currView.setAlpha(1f);
            }
        });
         currView.findViewById(R.id.imageButtonCancel).setOnClickListener(new View.OnClickListener() {
@@ -285,20 +328,34 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 currView.findViewById(R.id.imageButtonDelete).setVisibility(View.INVISIBLE);
                 currView.findViewById(R.id.imageButtonLock).setVisibility(View.INVISIBLE);
                 closeAll.setVisibility(View.INVISIBLE);
+                BackAlphaAllView();
+                currView.setAlpha(1f);
             }
         });
        currView.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View view) {
                if(!currCheck){
+                   Context ctx;
                Documents currDocument;
                for(int i = 0; i < recentApps.size(); i++){
                    if(recentApps.get(i).getName().equals(currName)) {recentApps.add(1, recentApps.get(i));
                    recent.addView(getView(1), 1);
                    recentApps.remove(i + 1);recent.removeViewAt(i + 1); break;}
                }
+               if(currName.equals("Google Chrome")){
+                  Intent i = new Intent(HomeActivity.this, ChromeActivity.class);
+                   startActivity(i);
+               }
+               else if(currName.equals("Adobe Reader")){
+                    ctx = HomeActivity.this;
+                   Intent i = ctx.getPackageManager().getLaunchIntentForPackage("com.adobe.reader");
+                   ctx.startActivity(i);
+               }
+               else{
                File file = new File("/storage/emulated/0/Download/" + currName);
                openFile(file, context);}
+               }
            }
        });
        currView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -310,7 +367,10 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                    currView.findViewById(R.id.imageButtonDelete).setVisibility(View.VISIBLE);
                    currView.findViewById(R.id.imageButtonLock).setVisibility(View.VISIBLE);
                    closeAll.setVisibility(View.VISIBLE);
-               return true;}
+                   AlphaAllView();
+                   currView.setAlpha(1);
+               return true;
+               }
                return  false;
            }
        });
