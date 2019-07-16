@@ -16,11 +16,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-
+import com.example.gorsovarch.MyFTPClientFunctions;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -31,11 +32,11 @@ import static com.example.gorsovarch.Files.openFile;
 
 public class DocumentsActivity extends AppCompatActivity {
     final static String LOG_TAG = "myLogs";
-
-    final static String FILENAME = "file";
-
+    private MyFTPClientFunctions ftpclient = null;
+    final static String FILENAME = "jj";
+    private String[] fileList;
     final static String DIR_SD = "MyFiles";
-    final static String FILENAME_SD = "fileSD";
+    final static String FILENAME_SD = "admin.txt";
     ArrayList< Documents > ls;
     List<RecentAppView> recentapp;
     public static ArrayList<String> mishaXyuSosi;
@@ -46,32 +47,57 @@ public class DocumentsActivity extends AppCompatActivity {
     Intent intentBack;
     DocumentsAdapter documentsAdapter;
     ProgressDialog pd;
-    public static ArrayList<String> fileList = new ArrayList<>();
-    Handler handler;
+    private Handler handler = new Handler() {
+
+        public void handleMessage(android.os.Message msg) {
+
+            if (pd != null && pd.isShowing()) {
+                pd.dismiss();
+            }
+            if (msg.what == 0) {
+                getFTPFileList();
+            } else if (msg.what == 1) {
+                //Toast.makeText(DocumentsActivity.this, "" + fileList.length,
+                      //  Toast.LENGTH_LONG).show();
+                fillParashu();
+            } else if (msg.what == 2) {
+                Toast.makeText(DocumentsActivity.this, "Uploaded Successfully!",
+                        Toast.LENGTH_LONG).show();
+            } else if (msg.what == 3) {
+                Toast.makeText(DocumentsActivity.this, "Disconnected Successfully!",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(DocumentsActivity.this, "Unable to Perform Action!",
+                        Toast.LENGTH_LONG).show();
+            }
+
+        }
+
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_documents);
+        ls = new ArrayList<Documents>();
+        ftpclient = new MyFTPClientFunctions();
         context = this;
-        handler = new Handler();
         mishaXyuSosi = new ArrayList<String>();
-        getFTPFileList();
-            Toast.makeText(this, "" + mishaXyuSosi.size(), Toast.LENGTH_SHORT).show();
-            ls = new ArrayList<Documents>();
-            ArrayList<String> c = readFile();
+        connectToFTPAddress();
+
+           // ArrayList<String> c = readFile(FILENAME);
          //  if(c.size() > 1) Toast.makeText(this, c.get(1), Toast.LENGTH_SHORT).show();
-            for(int i = 0; i < c.size(); i++)
-                if(c.get(i).equals("lec8.pdf"))  {ls.add(new Documents("lec8.pdf", "2000", true));break;}
+           // for(int i = 0; i < c.size(); i++)
+             //   if(c.get(i).equals("lec8.pdf"))  {ls.add(new Documents("lec8.pdf", "2000", true));break;}
           // else ls.add(new Documents("lec8.pdf", "2000", false));
-        for(int i = 0; i < c.size(); i++)
-            if(c.get(i).equals("contest-10122-uk.pdf"))  {ls.add(new Documents("contest-10122-uk.pdf", "2000", true));break;}
+       // for(int i = 0; i < c.size(); i++)
+         //   if(c.get(i).equals("contest-10122-uk.pdf"))  {ls.add(new Documents("contest-10122-uk.pdf", "2000", true));break;}
          //   else ls.add(new Documents("contest-10122-uk.pdf", "2000", false));
           //  ls.add(new Documents("contest-10122-uk.pdf", "30000", false));
-        for(int i = 0; i < c.size(); i++)
-            if(c.get(i).equals("storya-godinnika.docx")) { ls.add(new Documents("storya-godinnika.docx", "2000", true));break;}
+        //for(int i = 0; i < c.size(); i++)
+          //  if(c.get(i).equals("storya-godinnika.docx")) { ls.add(new Documents("storya-godinnika.docx", "2000", true));break;}
             //else ls.add(new Documents("storya-godinnika.docx", "2000", false));
           //  ls.add(new Documents("storya-godinnika.docx", "4000000", false));
-            ls.add(new Documents("alfutova.pdf", "2000", false));
+            /*ls.add(new Documents("alfutova.pdf", "2000", false));
             ls.add(new Documents("Голос-0001.mp3", "30000", false));
             ls.add(new Documents("300000000", "4000000", false));
             ls.add(new Documents("100000000", "2000", false));
@@ -79,7 +105,7 @@ public class DocumentsActivity extends AppCompatActivity {
             ls.add(new Documents("300000000", "4000000", false));
             ls.add(new Documents("100000000", "2000", false));
             ls.add(new Documents("20000000", "30000", false));
-            ls.add(new Documents("300000000", "4000000", false));
+            ls.add(new Documents("300000000", "4000000", false));*/
             lv = (ListView) findViewById(R.id.listView);
             documentsAdapter = new DocumentsAdapter(this, ls);
             lv.setAdapter(documentsAdapter);
@@ -128,7 +154,8 @@ public class DocumentsActivity extends AppCompatActivity {
               }
           }
       });
-        }
+
+    }
 
 
     @Override
@@ -136,22 +163,6 @@ public class DocumentsActivity extends AppCompatActivity {
         intentBack.putExtra("MAXINDEX", MAXINDEX);
         setResult(RESULT_OK, intentBack);
         finish();
-    }
-   private void getFTPFileList() {
-        pd = ProgressDialog.show(DocumentsActivity.this, "", "Getting Files...",
-                true, false);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    DocumentsActivity.fileList = MyFTPClientFunctions.ftpclient.ftpPrintFilesList("/");
-                    handler.sendEmptyMessage(1);
-                }catch (Exception e){
-                    Toast.makeText(DocumentsActivity.this, "Cannot get list of documents", Toast.LENGTH_SHORT).show();
-                }
-            }
-        }).start();
-        pd.dismiss();
     }
     void writeFile(String curr) {
         try {
@@ -170,12 +181,12 @@ public class DocumentsActivity extends AppCompatActivity {
         }
     }
 
-    ArrayList<String> readFile() {
+    ArrayList<String> readFile(String fileName) {
         ArrayList<String> curr = new ArrayList<String>();
         try {
             // открываем поток для чтения
             BufferedReader br = new BufferedReader(new InputStreamReader(
-                    openFileInput(FILENAME)));
+                    openFileInput("/storage/emulated/0/admin.txt")));
             String str = "";
             // читаем содержимое
             while ((str = br.readLine()) != null) {
@@ -190,5 +201,64 @@ public class DocumentsActivity extends AppCompatActivity {
             e.printStackTrace();
             return curr;
         }
+    }
+    private void connectToFTPAddress() {
+
+        final String host = "192.168.1.26";
+        final String username = "1";
+        final String password = "1";
+
+        if (host.length() < 1) {
+            Toast.makeText(DocumentsActivity.this, "Please Enter Host Address!",
+                    Toast.LENGTH_LONG).show();
+        } else if (username.length() < 1) {
+            Toast.makeText(DocumentsActivity.this, "Please Enter User Name!",
+                    Toast.LENGTH_LONG).show();
+        } else if (password.length() < 1) {
+            Toast.makeText(DocumentsActivity.this, "Please Enter Password!",
+                    Toast.LENGTH_LONG).show();
+        } else {
+
+            pd = ProgressDialog.show(DocumentsActivity.this, "", "Connecting...",
+                    true, false);
+
+            new Thread(new Runnable() {
+                public void run() {
+                    boolean status = false;
+                    status = ftpclient.ftpConnect(host, username, password, 21);
+                    if (status == true) {
+                        handler.sendEmptyMessage(0);
+                    } else {
+                        Log.d("DocumentsActivity", "Connection failed");
+                        handler.sendEmptyMessage(-1);
+                    }
+                }
+            }).start();
+        }
+    }
+    private void getFTPFileList() {
+        pd = ProgressDialog.show(DocumentsActivity.this, "", "Getting Files...",
+                true, false);
+
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                fileList = ftpclient.ftpPrintFilesList("/");
+                if(fileList != null) {
+                    Log.d("DocumentsActivity", "" + fileList.length);
+                    handler.sendEmptyMessage(1);
+                }
+            }
+        }).start();
+    }
+    void fillParashu(){
+        //Toast.makeText(this, "" + fileList.length,Toast.LENGTH_SHORT).show();
+        for(int i = 0; i < fileList.length; i++){
+            String temp = fileList[i].substring(8);
+            ls.add(new Documents(temp, "2000", false));
+        }
+        documentsAdapter = new DocumentsAdapter(this, ls);
+        lv.setAdapter(documentsAdapter);
     }
 }

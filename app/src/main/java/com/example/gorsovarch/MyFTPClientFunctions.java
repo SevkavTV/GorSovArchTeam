@@ -1,58 +1,58 @@
 package com.example.gorsovarch;
 
-import android.content.Context;
-import android.util.Log;
-import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
-import com.example.gorsovarch.DocumentsActivity;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 
-import static com.example.gorsovarch.DocumentsActivity.fileList;
-import static com.example.gorsovarch.DocumentsActivity.mishaXyuSosi;
+import android.content.Context;
+import android.util.Log;
 
-public class MyFTPClientFunctions extends AppCompatActivity {
-    ArrayList<String> FL;
-    FTPFile[] ftpFiles;
+public class MyFTPClientFunctions {
+
+    // Now, declare a public FTP client object.
+
     private static final String TAG = "MyFTPClientFunctions";
-    public static FTPClient mFTPClient;
-    public static MyFTPClientFunctions ftpclient = new MyFTPClientFunctions();
+    public FTPClient mFTPClient = null;
+
+    // Method to connect to FTP server:
     public boolean ftpConnect(String host, String username, String password,
                               int port) {
-        boolean status = false;
         try {
             mFTPClient = new FTPClient();
+            // connecting to the host
             mFTPClient.connect(host, port);
             if (FTPReply.isPositiveCompletion(mFTPClient.getReplyCode())) {
-                status = mFTPClient.login(username, password);
-                if(status){
+                boolean status = mFTPClient.login(username, password);
                 mFTPClient.setFileType(FTP.BINARY_FILE_TYPE);
                 mFTPClient.enterLocalPassiveMode();
-                return status;}
+                return status;
             }
         } catch (Exception e) {
             Log.d(TAG, "Error: could not connect to host " + host);
         }
-        return status;
+        return false;
     }
+
+    // Method to disconnect from FTP server:
+
     public boolean ftpDisconnect() {
         try {
-            //mFTPClient.logout();
+            mFTPClient.logout();
             mFTPClient.disconnect();
             return true;
         } catch (Exception e) {
             Log.d(TAG, "Error occurred while disconnecting from ftp server.");
-            return false;
         }
+
+        return false;
     }
+
+    // Method to get current working directory:
+
     public String ftpGetCurrentWorkingDirectory() {
         try {
             String workingDir = mFTPClient.printWorkingDirectory();
@@ -60,99 +60,152 @@ public class MyFTPClientFunctions extends AppCompatActivity {
         } catch (Exception e) {
             Log.d(TAG, "Error: could not get current working directory.");
         }
+
         return null;
     }
-  /*  public ArrayList<String> ftpPrintFilesList(final String dir_path) {
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                FTPFile[] ftpFiles = new FTPFile[0];
-                try {
-                    ftpFiles = mFTPClient.listFiles(dir_path);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                int length = ftpFiles.length;
-                for (int i = 0; i < length; i++) {
-                    String name = ftpFiles[i].getName();
-                    System.out.println("SOMEFILE"+name);
-                    DocumentsActivity.fileList.add(name);
 
-                }
-            }
-        });
-        t.start();
+    // Method to change working directory:
+
+    public boolean ftpChangeDirectory(String directory_path) {
         try {
-            t.join();
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
+            mFTPClient.changeWorkingDirectory(directory_path);
+        } catch (Exception e) {
+            Log.d(TAG, "Error: could not change directory to " + directory_path);
         }
 
-        return DocumentsActivity.fileList;
+        return false;
+    }
 
-    }*/
+    // Method to list all files in a directory:
+
+    public String[] ftpPrintFilesList(String dir_path) {
+        String[] fileList = null;
+        try {
+            FTPFile[] ftpFiles = mFTPClient.listFiles(dir_path);
+            int length = ftpFiles.length;
+            fileList = new String[length];
+            for (int i = 0; i < length; i++) {
+                String name = ftpFiles[i].getName();
+                boolean isFile = ftpFiles[i].isFile();
+
+                if (isFile) {
+                    fileList[i] = "File :: " + name;
+                    Log.i(TAG, "File : " + name);
+                } else {
+                    fileList[i] = "Directory :: " + name;
+                    Log.i(TAG, "Directory : " + name);
+                }
+            }
+            return fileList;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return fileList;
+        }
+    }
+
+    // Method to create new directory:
+
+    public boolean ftpMakeDirectory(String new_dir_path) {
+        try {
+            boolean status = mFTPClient.makeDirectory(new_dir_path);
+            return status;
+        } catch (Exception e) {
+            Log.d(TAG, "Error: could not create new directory named "
+                    + new_dir_path);
+        }
+
+        return false;
+    }
+
+    // Method to delete/remove a directory:
+
+    public boolean ftpRemoveDirectory(String dir_path) {
+        try {
+            boolean status = mFTPClient.removeDirectory(dir_path);
+            return status;
+        } catch (Exception e) {
+            Log.d(TAG, "Error: could not remove directory named " + dir_path);
+        }
+
+        return false;
+    }
+
+    // Method to delete a file:
+
+    public boolean ftpRemoveFile(String filePath) {
+        try {
+            boolean status = mFTPClient.deleteFile(filePath);
+            return status;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    // Method to rename a file:
+
+    public boolean ftpRenameFile(String from, String to) {
+        try {
+            boolean status = mFTPClient.rename(from, to);
+            return status;
+        } catch (Exception e) {
+            Log.d(TAG, "Could not rename file: " + from + " to: " + to);
+        }
+
+        return false;
+    }
+
+    // Method to download a file from FTP server:
+
+    /**
+     * mFTPClient: FTP client connection object (see FTP connection example)
+     * srcFilePath: path to the source file in FTP server desFilePath: path to
+     * the destination file to be saved in sdcard
+     */
     public boolean ftpDownload(String srcFilePath, String desFilePath) {
         boolean status = false;
         try {
             FileOutputStream desFileStream = new FileOutputStream(desFilePath);
+            ;
             status = mFTPClient.retrieveFile(srcFilePath, desFileStream);
             desFileStream.close();
+
             return status;
         } catch (Exception e) {
             Log.d(TAG, "download failed");
         }
+
         return status;
     }
-    public ArrayList<String> ftpPrintFilesList(final String dir_path) {
 
-       // final ArrayList<String> fileList = new ArrayList<>();
-        FL = new ArrayList<>();
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
+    // Method to upload a file to FTP server:
 
-                try {
-                    ftpFiles = mFTPClient.listFiles(dir_path);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                int length = ftpFiles.length;
-                //System.out.println("MISHA SOSI CHLEN !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + length);
-               // Toast.makeText(DocumentsActivity.class, length + "", Toast.LENGTH_SHORT).show();
-                for (int i = 0; i < length; i++) {
-                    String name = ftpFiles[i].getName();
-                    System.out.println("SOMEFILE"+name);
-                    FL.add(name);
-                    DocumentsActivity.mishaXyuSosi.add(name);
-                  //  System.out.println(mishaXyuSosi.size() + " FL SIZE = <- ");
-                  // if(i == length - 1) return;
-                }
-             //   DocumentsActivity.mishaXyuSosi = FL;
-             //   return FL;
-            }
-        });
-        t.start();
-      /*  try {
-            t.join();
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        }
-*/
-        return FL;
-
-    }
+    /**
+     * mFTPClient: FTP client connection object (see FTP connection example)
+     * srcFilePath: source file path in sdcard desFileName: file name to be
+     * stored in FTP server desDirectory: directory path where the file should
+     * be upload to
+     */
     public boolean ftpUpload(String srcFilePath, String desFileName,
                              String desDirectory, Context context) {
         boolean status = false;
         try {
             FileInputStream srcFileStream = new FileInputStream(srcFilePath);
+
+            // change working directory to the destination directory
+            // if (ftpChangeDirectory(desDirectory)) {
             status = mFTPClient.storeFile(desFileName, srcFileStream);
+            // }
+
             srcFileStream.close();
+
             return status;
         } catch (Exception e) {
             e.printStackTrace();
             Log.d(TAG, "upload failed: " + e);
         }
+
         return status;
     }
 }

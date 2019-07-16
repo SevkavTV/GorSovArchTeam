@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
     Button enter;
     Context context = this;
     String ssid_temp = "";
-    //public static String username, password, HOST = "192.168.1.27";
-    public static final String ssid_default = "4ipNet_Internan";
+    //public static String username, password, HOST = "192.168.1.26";
+    public static final String ssid_default = "4ipNet_Shkola";
     private static final String TAG = "MainActivity";
     private static final String TEMP_FILENAME = "TAGtest.txt";
     private Context cntx = null;
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Disconnected Successfully!",
                         Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(MainActivity.this, "Неправильний логін чи парроль",
+                Toast.makeText(MainActivity.this, "Неправильний логін чи пароль!",
                         Toast.LENGTH_LONG).show();
             }
 
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void connectToFTPAddress() {
 
-        final String host = "192.168.1.27";
+        final String host = "192.168.1.26";
         final String username = edtUserName.getText().toString().trim();
         final String password = edtPassword.getText().toString().trim();
 
